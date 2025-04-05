@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>System Alert!</title>
+    <style>
+        body {
+            background: black;
+            color: red;
+            font-family: Arial;
+            text-align: center;
+            padding: 50px;
+        }
+        .blink {
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="blink">⚠️ SYSTEM HACKED ⚠️</h1>
+    <p>Your system has been compromised!</p>
+    
+    <div id="details" style="text-align: left; margin: 20px auto; width: 300px;">
+        <p>IP Address: <span id="ip">Loading...</span></p>
+        <p>Location: <span id="location">Loading...</span></p>
+        <p>Browser: <span id="browser">Loading...</span></p>
+    </div>
+
+    <script>
+        // Get basic browser info
+        document.getElementById('browser').innerHTML = navigator.userAgent;
+
+        // Get IP and location
+        fetch('https://ipapi.co/json/')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('ip').innerHTML = data.ip;
+                document.getElementById('location').innerHTML = 
+                    `${data.city}, ${data.region}, ${data.country_name}`;
+            })
+            .catch(error => {
+                document.getElementById('ip').innerHTML = 'Could not fetch';
+                document.getElementById('location').innerHTML = 'Unknown';
+            });
+
+        // Add some scary effects
+        setTimeout(() => {
+            document.body.style.background = 'darkred';
+            setTimeout(() => {
+                document.body.style.background = 'black';
+            }, 500);
+        }, 2000);
+    </script>
+</body>
+</html>
