@@ -1,57 +1,147 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>System Alert!</title>
+    <title>CRITICAL BREACH DETECTED</title>
     <style>
         body {
-            background: black;
-            color: red;
-            font-family: Arial;
-            text-align: center;
-            padding: 50px;
+            background: #001100;
+            color: #0f0;
+            font-family: 'Courier New';
+            margin: 0;
+            overflow: hidden;
         }
-        .blink {
-            animation: blink 1s infinite;
+        .matrix {
+            position: absolute;
+            opacity: 0.3;
+            z-index: -1;
         }
-        @keyframes blink {
-            50% { opacity: 0; }
+        .glow {
+            text-shadow: 0 0 10px #0f0;
+        }
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #0f0;
+            box-shadow: 0 0 10px #0f0;
+            animation: scan 4s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: -2px; }
+            100% { top: 100%; }
         }
     </style>
 </head>
 <body>
-    <h1 class="blink">⚠️ SYSTEM HACKED ⚠️</h1>
-    <p>Your system has been compromised!</p>
+    <canvas class="matrix" id="matrix"></canvas>
+    <div class="scanline"></div>
     
-    <div id="details" style="text-align: left; margin: 20px auto; width: 300px;">
-        <p>IP Address: <span id="ip">Loading...</span></p>
-        <p>Location: <span id="location">Loading...</span></p>
-        <p>Browser: <span id="browser">Loading...</span></p>
+    <div style="padding: 50px; text-align: center;">
+        <h1 class="glow">🚨 TARGET ACQUIRED: Tranda Thanh 🚨</h1>
+        <h3>SYSTEM INTRUSION DETECTED [CODE: PHANTOM-7]</h3>
+        
+        <div style="border: 2px solid #0f0; padding: 20px; margin: 30px; text-align: left;">
+            <pre id="console">
+[!] Initializing breach protocol...
+[!] Decrypting system data...
+            </pre>
+            <div id="progress" style="height: 3px; background: #0f0; width: 0%;"></div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+            <div>
+                <h4>DEVICE INFO</h4>
+                <p>IP: <span id="ip">[decrypting...]</span></p>
+                <p>OS: <span id="os">${navigator.platform}</span></p>
+                <p>Browser: <span id="browser">${navigator.userAgent}</span></p>
+            </div>
+            <div>
+                <h4>LOCATION TRACKING</h4>
+                <p>City: <span id="city">[classified]</span></p>
+                <p>Country: <span id="country">[redacted]</span></p>
+                <p>ISP: <span id="isp">[analyzing...]</span></p>
+            </div>
+            <div>
+                <h4>CYBER THREAT LEVEL</h4>
+                <p style="color: #f00;">CRITICAL SEVERITY</p>
+                <p>Data Exfiltrated: 87%</p>
+                <p>Time Remaining: <span id="timer">02:59</span></p>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Get basic browser info
-        document.getElementById('browser').innerHTML = navigator.userAgent;
+        // Matrix background effect
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const chars = '01';
+        const drops = Array(Math.floor(canvas.width/10)).fill(0);
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 17, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0f0';
+            drops.forEach((drop, i) => {
+                const char = chars[Math.floor(Math.random()*chars.length)];
+                ctx.fillText(char, i*10, drop*10);
+                drops[i] = (drop*10 > canvas.height || Math.random() > 0.95) ? 0 : drop + 1;
+            });
+            requestAnimationFrame(drawMatrix);
+        }
+        drawMatrix();
 
-        // Get IP and location
+        // Hacking simulation
+        const consoleElem = document.getElementById('console');
+        const messages = [
+            "Bypassing firewall...",
+            "Accessing webcam feed...",
+            "Downloading browser history...",
+            "Injecting payload...",
+            "Establishing persistence...",
+            "Encrypting system files..."
+        ];
+        let progress = 0;
+        const hackSimulation = setInterval(() => {
+            consoleElem.innerHTML += `\n[!] ${messages[Math.floor(Math.random()*messages.length)]}`;
+            consoleElem.scrollTop = consoleElem.scrollHeight;
+            progress += 2;
+            document.getElementById('progress').style.width = `${progress}%`;
+            if(progress >= 100) clearInterval(hackSimulation);
+        }, 1500);
+
+        // Get real data
         fetch('https://ipapi.co/json/')
             .then(response => response.json())
             .then(data => {
-                document.getElementById('ip').innerHTML = data.ip;
-                document.getElementById('location').innerHTML = 
-                    `${data.city}, ${data.region}, ${data.country_name}`;
-            })
-            .catch(error => {
-                document.getElementById('ip').innerHTML = 'Could not fetch';
-                document.getElementById('location').innerHTML = 'Unknown';
+                document.getElementById('ip').textContent = data.ip;
+                document.getElementById('city').textContent = data.city;
+                document.getElementById('country').textContent = data.country_name;
+                document.getElementById('isp').textContent = data.org;
             });
 
-        // Add some scary effects
-        setTimeout(() => {
-            document.body.style.background = 'darkred';
-            setTimeout(() => {
-                document.body.style.background = 'black';
-            }, 500);
-        }, 2000);
+        // Countdown timer
+        let timeLeft = 179;
+        const timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer').textContent = 
+                `${Math.floor(timeLeft/60).toString().padStart(2,'0')}:${(timeLeft%60).toString().padStart(2,'0')}`;
+            if(timeLeft <= 0) clearInterval(timer);
+        }, 1000);
+
+        // Add sound effects
+        const audio = new Audio('data:audio/wav;base64,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qJrx4KOQjahZxWbcZgztj2c49nKmkId44S71j0c8eV9yDK6uPRzx5X18eDvjvQ6yKo9ZSS6l//8elePK/Lf//IInrOF/FvDoADYAGBMGb7FtErm5MXMlmPAJQVgWta7Zx2go+8xJ0UiCb8LHHdftWyLJE0QIAIsI+UbXu67dZMjmgDGCGl1H+vpF4NSDckSIkk7Vd+sxEhBQMRU8j/12UIRhzSaUdQ+rQU5kGeFxm+hb1oh6pWWmv3uvmReDl0UnvtapVaIzo1jZbf/pD6ElLqSX+rUmOQNpJFa/r+sa4e/pBlAABoAAAAA3CUgShLdGIxsY7AUABPRrgCABdDuQ5GC7DqPQCgbbJUAoRSUj+NIEig0YfyWUho1VBBBA//uQZB4ABZx5zfMakeAAAAmwAAAAF5F3P0w9GtAAACfAAAAAwLhMDmAYWMgVEG1U0FIGCBgXBXAtfMH10000EEEEEECUBYln03TTTdNBDZopopYvrTTdNa325mImNg3TTPV9q3pmY0xoO6bv3r00y+IDGid/9aaaZTGMuj9mpu9Mpio1dXrr5HERTZSmqU36A3CumzN/9Robv/Xx4v9ijkSRSNLQhAWumap82WRSBUqXStV/YcS+XVLnSS+WLDroqArFkMEsAS+eWmrUzrO0oEmE40RlMZ5+ODIkAyKAGUwZ3mVKmcamcJnMW26MRPgUw6j+LkhyHGVGYjSUUKNpuJUQoOIAyDvEyG8S5yfK6dhZc0Tx1KI/gviKL6qvvFs1+bWtaz58uUNnryq6kt5RzOCkPWlVqVX2a/EEBUdU1KrXLf40GoiiFXK///qpoiDXrOgqDR38JB0bw7SoL+ZB9o1RCkQjQ2CBYZKd/+VJxZRRZlqSkKiws0WFxUyCwsKiMy7hUVFhIaCrNQsKkTIsLivwKKigsj8XYlwt/WKi2N4d//uQRCSAAjURNIHpMZBGYiaQPSYyAAABLAAAAAAAACWAAAAApUF/Mg+0aohSIRobBAsMlO//Kk4soosy1JSFRYWaLC4qZBYWFRGZdwqKiwkNBVmoWFSJkWFxX4FFRQWR+LsS4W/rFRb/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////VEFHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU291bmRib3kuZGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjAwNGh0dHA6Ly93d3cuc291bmRib3kuZGUAAAAAAAAAACU=');
+        document.body.addEventListener('click', () => {
+            audio.loop = true;
+            audio.play();
+        });
+
+        // Random glitch effect
+        setInterval(() => {
+            document.body.style.transform = `translate(${Math.random()*4-2}px, ${Math.random()*4-2}px)`;
+        }, 50);
     </script>
 </body>
 </html>
